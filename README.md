@@ -112,21 +112,21 @@ Another column that I suspect could be NMAR is the `'rating'` column. The values
 
 ### Missingness Dependency
 
-The review column could contain missing data that is potentially MAR on another column. Let's try and find out what columns the missingness could depend on!
+The `'review'` column could contain missing data that is potentially MAR on another column. Let's try and find out what columns the missingness could depend on!
 
 First, let's see if the missingness of the reviews could depend on the amount of time needed to prepare the recipe. 
 
 <iframe
   src="assets/permutation_minutes_dist.html"
-  width="900"
-  height="500"
+  width="600"
+  height="400"
   frameborder="0"
 ></iframe>
 
 To perform this permutation test, we will use the following:
 
 **Null Hypothesis**: The distribution of minutes needed to prepare a recipe is the same for both missing and non-missing reviews.
-**Alternative Hypothesis**: The distribution of minutes needed to prepare a recipe is the different for missing and non-missing reviews.
+**Alternative Hypothesis**: The distribution of minutes needed to prepare a recipe is different for missing and non-missing reviews.
 **Test Statistic**: Absolute difference in means of minutes for missing reviews and non-missing reviews
 **Significance Level**: 0.05
 
@@ -138,6 +138,41 @@ We shuffled the `'minutes'` column to simulate data under the null hypothesis 10
   height="400"
   frameborder="0"
 ></iframe>
+
+**Observed Statistic**: 33.5635
+**P-Value**: 0.6799
+
+Since our P-value was larger than our significance level (0.05), we **fail to reject** the null hypothesis. We do not have convincing evidence that the missingness of the `'review'` column depends on the number of minutes taken to prepare a recipe!
+
+Let's test a different column. Could the missingness of the reviews depend on the number of calories in a recipe?
+
+<iframe
+  src="assets/permutation_cals_dist.html"
+  width="600"
+  height="400"
+  frameborder="0"
+></iframe>
+
+Our setup is much the same. To perform this permutation test, we will use the following:
+
+**Null Hypothesis**: The distribution of calories in a recipe is the same for both missing and non-missing reviews.
+**Alternative Hypothesis**: The distribution of calories in a recipe is different for missing and non-missing reviews.
+**Test Statistic**: Absolute difference in means of calories for missing reviews and non-missing reviews
+**Significance Level**: 0.05
+
+This time, we will shuffle the `'Calories (#)'` column 10000 times. For each simulation, we will calculate the absolute difference in means for calories with missing and non-missing reviews.
+
+<iframe
+  src="assets/permutation_cals_test.html"
+  width="600"
+  height="400"
+  frameborder="0"
+></iframe>
+
+**Observed Statistic**: 319.2691
+**P-Value**: 0.0063
+
+Since our P-value was lower than our significance level (0.05), we can **reject** the null hypothesis. It's possible that the missingness of the `'review'` column can depend on the number of calories present in a recipe!
 
 ---
 ## Hypothesis Testing
