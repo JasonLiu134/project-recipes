@@ -4,16 +4,17 @@ by Jason Liu (jal134@ucsd.edu)
 ---
 ## Introduction
 
-As a college student, I face a constant struggle in deciding what to eat each day. Dining at restaurants can be very expensive, so cooking my own meals is the best option. However, on some days, I'm limited by the amount of free time I have to cook food, and it can be quite troublesome to decide on if I have time to cook or not. I also want to make sure I'm eating properly, and getting enough calories to sustain myself properly. I'd like to be able to prepare some food that gets me all of the nutrients I need and also tastes good, and I need to know how long it'll take me to make these recipes so I can plan out my time better. All of this leads me to ask the question:
+As a college student, I face a constant struggle in trying to decide what to eat every day. Dining at restaurants can be very expensive, so cooking my own meals is what I like to choose. However, on some days, I can be quite limited in what I can actually make, since I might not have a wide variety of ingredients or I might not have enough time. Even then, I think it's important to be eating healthy, so I can have enough energy to get my work done. As such, I'd like to be able to prepare some food that gets me all the calories I need, and it needs to taste good as well (I can be a picky eater!); assuming these conditions are met, I need to know how long it'll take me to prepare my food so I can plan out my time, making sure I can get all of my homework done. All of this leads me to look into the question:
 
-**How do the nutritial values, complexity, and quality of a recipe affect the amount of time it takes to prepare the recipe?**
+**How do the nutritial values, complexity, and quality of a recipe affect the amount of time it takes to prepare a particular recipe?**
 
 To find out the answer to this question, I will be analyzing two different datasets.
 
 The first dataset is our "raw_recipes" dataset. It contains data about different recipes taken from food.com that were posted after the year 2008.
+This dataset has 83782 rows and 12 columns. Each row corresponds to a unique recipe. The data stored in the columns is as follows:
 
 | Column   | Description
-| :------  | :-----------
+| :-----  | :-----
 | `'name'` | Recipe name
 | `'id'` | Recipe ID
 | `'minutes'` | Minutes to prepare recipe
@@ -26,6 +27,21 @@ The first dataset is our "raw_recipes" dataset. It contains data about different
 | `'description'` | User-provided description
 | `'ingredients'` | Text for ingredients used in recipe
 | `'n_ingredients'` | Number of ingredients used in recipe
+
+The other dataset is our "raw_interactions" dataset. This dataset contains the ratings and reviews that other users for the posted recipes.
+This dataset has 731927 rows and 5 columns. Each row corresponds to a review that a user has left. The data stored in the columns is as follows:
+
+| Column   | Description
+| :-----  | :-----
+| `'user_id'` |	User ID
+| `'recipe_id'` | Recipe ID
+| `'date'` | Date of interaction
+| `'rating'` | Rating given
+| `'review'` | Review text
+
+These datasets provide some good information that helps me answer my question. The first dataset provides all of the relevant nutritional information that I will want to analyze. It also provides data for each recipe's complexity, which can be generalized as the amount of ingredients a recipe has, as well as the number of steps in the preparataion process. The second dataset gives us information on the ratings and reviews of specific recipes, which will tell us the quality of a recipe in general (a good recipe will have higher ratings).
+
+We will use these datasets in conjuction with each other in order to help us look into the possible relationships between nutrition, recipe complexity, recipe quality, and the amount of time needed to prepare recipes. The next section will go into more detail on how we can do this.
 
 ---
 ## Data Cleaning and Exploratory Data Analysis
