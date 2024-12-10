@@ -59,7 +59,17 @@ To start, we should clean up our datasets so we can do our analysis easily. Firs
 7. Add the average rating series back into our merged dataframe using another left merge. The merged dataframe will now include a new column that includes the average rating for each recipe.
 - The merge itself will be on the recipe ID in the merged dataframe, and the index of the average rating series (since we created it from groupby, the index is the recipe ID). This results in the recipe ID appearing twice in the resulting merge, so we will drop one of them.
 
-We now have a cleaned dataset, `merged_recipes`, that we can use! This is what the head of the dataframe looks like:
+We now have a cleaned dataset, `merged_recipes`, that we can use! This is what the head of the dataframe looks like (Note: I included only relevant columns that I'll be using in my analysis):
+
+| name                               | minutes | n_steps | n_ingredients | Calories (#) | Protein (PDV) | Carbohydrates (PDV) | rating | review                                            | average_rating |
+| :-----                             | :-----  | :-----  | :-----        | :-----       | :-----        | :-----              | :----- | :-----                                            | :-----         |
+| 1 brownies in the world best ever	 | 40      | 10      | 9             | 138.4        | 3.0           | 6.0                 | 4.0    | These were pretty good, but took forever to ba... | 4.0
+| 1 in canada chocolate chip cookies | 45      | 12      | 11            | 595.1        | 13.0          | 26.0                | 5.0    | Originally I was gonna cut the recipe in half ... | 5.0
+| 412 broccoli casserole             | 40      | 6       | 9             | 194.8        | 22.0          | 3.0                 | 5.0    | This was one of the best broccoli casseroles t... | 5.0
+| 412 broccoli casserole             | 40      | 6       | 9             | 194.8        | 22.0          | 3.0                 | 5.0    | I made this for my son's first birthday party ... | 5.0
+| 412 broccoli casserole             | 40      | 6       | 9             | 194.8        | 22.0          | 3.0                 | 5.0    | Loved this. Be sure to completely thaw the br...  | 5.0
+
+The `merged_recipes` dataframe has 234429 rows and 25 columns.
 
 ---
 ## Hypothesis Testing
