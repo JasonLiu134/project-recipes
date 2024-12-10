@@ -268,6 +268,7 @@ I chose to tune the `n_estimators` because I want to figure out what the optimal
 To tune the hyperparameters, I used `GridSearchCV` to find the best hyperparameters for a `RandomForestRegressor` model using 5 folds. This gave us the following best combination:
 
 `n_estimators`: 64
+
 `max_depth`: 8
 
 Now, let's fit our final model using the new features and `RandomForestRegressor` with the best hyperparameters. To evaluate our new model, I found the RMSE for the training and test data using the same train-test splits that the baseline model used.
@@ -276,6 +277,7 @@ Training Set RMSE: **22.4347**
 
 Test Set RMSE: **23.1618**
 
-The final model has higher training error than the baseline model, and lower test set error than the baseline model. This means that our final model is less accurate when it comes to making predictions on the training data, but is more accurate when making predictions on unseen data. This is likely because our final model is not overfitting to the training data as much compared to the baseline model. add more
+The final model has higher training error than the baseline model, and lower test set error than the baseline model. This means that our final model is less accurate when it comes to making predictions on the training data, but is more accurate when making predictions on unseen data. This is likely because our final model is not overfitting to the training data as much compared to the baseline model, allowing its predictions to be more accurate for our test data. As such, our final model is an improvement over our baseline!
+
 ---
 ## Fairness Analysis
