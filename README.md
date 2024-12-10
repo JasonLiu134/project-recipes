@@ -104,11 +104,9 @@ The distribution of calories appears to be skeweed right. A majority of the reci
 
 ### NMAR Analysis
 
-There are three columns in our dataset that have a non-trivial amount of missingness: `'description'`, `'rating'`, and `'review'`. Two of these columns could potentially have NMAR data. Specifically, the `'description'` and `'rating'` column could both contain data that is Not Missing at Random (NMAR).
+There are three columns in our dataset that have a non-trivial amount of missingness: `'description'`, `'rating'`, and `'review'`. A column that could potentially have data that is Not Missing at Random (NMAR) is the `'description'` column.
 
-The column that includes the description of recipes have a few values that are missing. The descriptions themselves are probably missing because the user who submitted the recipe did not include a description. However, there isn't really a clear relationship between a recipe's description and the rest of the data. The user who provided the recipe can include whatever they want in the description, and it could be completely unrelated to the recipe itself; there is no way to predict what the missing values could be. As such, I suspect that the `'description'` column is NMAR.
-
-Another column that I suspect could be NMAR is the `'rating'` column. The values in this column are missing because we replaced all ratings of 0 with np.nan, but the rating was 0 in the first place because the user who posted the review did not include a rating. We cannot predict what the user's rating would have been, since it's difficult to predict what the rating the user would have given simply based off of their review text. Furthermore, some reviews might not even be reviews - users might have left comments or questions about the recipe instead, which makes it impossible to tell if a user would have left a high or low rating. Therefore, I suspect that the missingness of the `'rating'` column is NMAR.
+The column that includes the description of recipes have a few values that are missing. The descriptions themselves are probably missing because the user who submitted the recipe did not include a description when posting their recipe on the website. The missingness of the description itself is a good indicator for why the description could be missing, as the user could have felt like their recipe is quite simple or popular and doesn't require a description, which results in there being no description. As such, I suspect that the `'description'` column is NMAR.
 
 ### Missingness Dependency
 
@@ -201,7 +199,7 @@ To answer this question, we will run a permutation test with the following:
 
 First, we have to define what is considered a "high" calorie count. According to [Livestrong.com](https://www.livestrong.com/article/440135-recommended-calorie-intake-for-one-meal/), the average calorie intake per meal for women is between 533 to 800, and between 667 to 1000 for men, though it can vary. For this test, we will classify recipes with a high calorie count as recipes that include **over 1000 calories**.
 
-To conduct the permutation test, we will shuffle the `'Calories (#)'` column 10000 times, and we will calculate the difference in means for the preparation time in minutes between recipes with at least 1000 calories and recipes with less than 1000 calories.
+To conduct the permutation test, we will shuffle the `'Calories (#)'` column 10000 times, and we will calculate the difference in means for the preparation time in minutes between recipes with at least 1000 calories and recipes with less than 1000 calories. I chose to use signed difference in means for the test statistic since my alternative hypothesis is one-tailed, so we need to know which mean is greater in the simulations.
 
 <iframe
   src="assets/hypothesis_test.html"
@@ -218,9 +216,66 @@ The P-value here is higher than our significance level (0.05), meaning we **fail
 
 ---
 ## Framing a Prediction Problem
+
+Now it's time to really address our question from the introduction as a whole: How do the nutritional values and quality of a recipe affect the amount of time it takes to prepare a particular recipe? We'll do this by attempting to fit a model to our data to try and predict the time taken to prepare a recipe using its nutritional values and overall quality (average ratings). The response variable is the **number of minutes to prepare a recipe**. This will be a **Regression Problem**, because the response variable we're predicting is quantitative, and the implementation will use a **Decision Tree Regressor** to make predictions, since it is better than a linear model at identifying complicated non-linear relationships.
+
+I chose the specific response variable since each individual recipe in the merged dataset has a preparation time, nutritional values, and average rating associated with it, allowing us to train our model very effectively. At the time of prediction, the data that we will have available is the average rating for each recipe, the nutritional information, and the steps and ingredients used in the recipe.
+
+To evaluate the model, we will use the **Root Mean Squared Error (RMSE)** as the evaluation metric. A lower RMSE value would indiate that our model is making predictions that are closer to the actual values, and will have better performance.
+
 ---
 ## Baseline Model
+
+Let's create our baseline DecisionTreeRegressor model. The model will make predictions using the following features:
+
+| Feature   | Data Type | Inclusion | Encoding
+| :-----  | :----- | :----- | :-----
+| `'Calories (#)'` | Quantitative | The number of calories is important, since it's the nutrition value that I prioritize the most, which is why I include it as a feature | The distribution calories is skewed right, and include some very large outliers, so we will use a **Log Encoding** to help scale the values
+| `'Protein (PDV)'` | Quantitative | The amount of protein is also very important, since meat can sometimes take a long time to cook to ensure it's safe | Like calories, the distribution is skewed right and we will use a **Log Encoding** to transform this column as well
+| `'average_rating'` | Quantitative | People might rate recipes differently if they're quick and easy, so the average rating could be an indicator for the prep time | This column represents the quality of a recipe, includes values from 1 to 5 only, and we will not need to encode it since its values are quantitative
+
+The model will predict the preparation time of a recipe in minutes. Something important to note is that the `'minutes'` column contains a lot of skew, as the average minutes is 115.03 while there are values as high as 1051200! To handle this, we will identify the outliers using the **Interquartile Range**, and values greater than the third quartile by 1.5 times the IQR will be considered outliers. Recipes that contain these outliers for minutes will be dropped, since they are not a good representation of what our dataset will want to predict on average.
+
+To keep things simple, I will be using the default hyperparameters for our DecisionTreeRegressor. This means that there won't be a maximum depth for the decision tree.
+
+After fitting the model, we have:
+
+Training Set RMSE: **5.7775** 
+
+Test Set RMSE: **35.9394**
+
+The RMSE indicates that our model is **not very good** at predicting the preparation time in minutes for a recipe using the provided features. Our RMSE is several times higher for the test data, meaning this baseline model is good at predicting values from the training data but bad at generalizing to unseen data. This could potentially be because decision trees are prone to overfitting on the training set, resulting in our model capturing a lot of noise from our training data.
+
 ---
 ## Final Model
+
+Since decision trees are prone to overfitting on training data, a better idea would be to use a **Random Forest Regressor** instead as our model. By fitting multiple different decision trees using random subsets of our training data and having them "vote" on predictions, there wouldn't be as much overfitting since the decision trees aren't very correlated with each other, and will not fit to training noise as much in general.
+
+We will also add some more features to help improve our model.
+
+| Feature   | Data Type | Inclusion | Encoding
+| :-----  | :----- | :----- | :-----
+| `'Sugar (PDV)'` | Quantitative | The amount of sugar can impact the amount of time taken to prepare a recipe, since a lot of sugar might indicate a recipe is a dessert, and could require baking which might take a different amount of time | The distribution is skewed right, and include some very large outliers, so we will use a **Log Encoding** to help scale the values
+| `'n_ingredients'` | Categorical | Having more ingredients could mean that a recipe is more complicated, and will need more time to prepare all of the ingredients | This data will be encoded using **One-Hot Encoding** since the number of ingredients is categorical, as we don't know what the ingredients are, and different types of ingredients could make the values have a different interpretation
+| `'n_steps'` | Categorical | If a recipe has more steps, then it's possible that more time will need to be spent overall since we'll need to complete more tasks to prepare a recipe | This data will also be encoded using **One-Hot Encoding** since the number of steps is categorical, as all steps might be different, so we're mostly concerned with the complexity of the recipe based on the number of steps
+
+The hyperparameters that were tuned in this model are the `max_depth` and the `n_estimators` of the Random Forest Regressor. 
+
+I chose to tune the `max_depth` because if the maximum depth for the trees in the model are too high, it could result in each tree being more biased to the training data, while having a low maximum depth could make the model too simple and fail to capture a relationship.
+
+I chose to tune the `n_estimators` because I want to figure out what the optimal number of decision trees to use in the random forest is. Generally, more decision trees will make our predictions more accurate, but it's good to make sure.
+
+To tune the hyperparameters, I used `GridSearchCV` to find the best hyperparameters for a `RandomForestRegressor` model using 5 folds. This gave us the following best combination:
+
+`n_estimators`: 64
+`max_depth`: 8
+
+Now, let's fit our final model using the new features and `RandomForestRegressor` with the best hyperparameters. To evaluate our new model, I found the RMSE for the training and test data using the same train-test splits that the baseline model used.
+
+Training Set RMSE: **22.4347** 
+
+Test Set RMSE: **23.1618**
+
+The final model has higher training error than the baseline model, and lower test set error than the baseline model. This means that our final model is less accurate when it comes to making predictions on the training data, but is more accurate when making predictions on unseen data. This is likely because our final model is not overfitting to the training data as much compared to the baseline model. add more
 ---
 ## Fairness Analysis
