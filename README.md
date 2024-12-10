@@ -79,8 +79,8 @@ The first few recipes we have are all rated very highly. Let's take a look at al
 
 <iframe
   src="assets/univariate_ratings.html"
-  width="800"
-  height="600"
+  width="600"
+  height="400"
   frameborder="0"
 ></iframe>
 It looks like the recipes tend to have very high ratings in general! This means that most people think the recipes in our dataset are very good, so we'll have to keep this in mind!
@@ -89,8 +89,8 @@ Let's also take a look at the distribution of calories in our dataset, so we kno
 
 <iframe
   src="assets/univariate_calories.html"
-  width="800"
-  height="600"
+  width="600"
+  height="400"
   frameborder="0"
 ></iframe>
 _Note: Around 1% of the values for calories fall in the range 2500 - 45609, and are excluded from the distribution (outliers)_
