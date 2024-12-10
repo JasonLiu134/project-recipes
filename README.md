@@ -46,6 +46,8 @@ We will use these datasets in conjuction with each other in order to help us loo
 ---
 ## Data Cleaning and Exploratory Data Analysis
 
+### Data Cleaning
+
 To start, we should clean up our datasets so we can do our analysis easily. First, let's transform some of the columns in the `raw_recipes` dataframe so our data is easy to work with.
 
 1. The `'tags'`, `'steps'`, and `'intredients'` columns in the dataframe are supposed to be lists, but they're currently strings. We will simply transform all of the values into lists.
@@ -70,6 +72,21 @@ We now have a cleaned dataset, `merged_recipes`, that we can use! This is what t
 | 412 broccoli casserole             | 40      | 6       | 9             | 194.8        | 22.0          | 3.0                 | 5.0    | Loved this. Be sure to completely thaw the br...  | 5.0
 
 The `merged_recipes` dataframe has 234429 rows and 25 columns.
+
+### Univariate Analysis
+
+The first few recipes we have are all rated very highly. Let's take a look at all of the recipe ratings to see how people feel about the recipes on food.com in general!
+
+<iframe
+  src="assets/univariate_recipes.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+It looks like the recipes tend to have very high ratings in general! This means that most people think the recipes in our dataset are very good, so we'll have to keep this in mind!
+
+### Bivariate Analysis
 
 ---
 ## Hypothesis Testing
