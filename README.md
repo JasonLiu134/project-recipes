@@ -10,7 +10,7 @@ As a college student, I face a constant struggle in trying to decide what to eat
 
 To find out the answer to this question, I will be analyzing two different datasets.
 
-The first dataset is our "raw_recipes" dataset. It contains data about different recipes taken from food.com that were posted after the year 2008.
+The first dataset is our `raw_recipes` dataset. It contains data about different recipes taken from food.com that were posted after the year 2008.
 This dataset has 83782 rows and 12 columns. Each row corresponds to a unique recipe. The data stored in the columns is as follows:
 
 | Column   | Description
@@ -28,7 +28,7 @@ This dataset has 83782 rows and 12 columns. Each row corresponds to a unique rec
 | `'ingredients'` | Text for ingredients used in recipe
 | `'n_ingredients'` | Number of ingredients used in recipe
 
-The other dataset is our "raw_interactions" dataset. This dataset contains the ratings and reviews that other users for the posted recipes.
+The other dataset is our `raw_interactions` dataset. This dataset contains the ratings and reviews that other users for the posted recipes.
 This dataset has 731927 rows and 5 columns. Each row corresponds to a review that a user has left. The data stored in the columns is as follows:
 
 | Column   | Description
@@ -45,6 +45,22 @@ We will use these datasets in conjuction with each other in order to help us loo
 
 ---
 ## Data Cleaning and Exploratory Data Analysis
+
+To start, we should clean up our datasets so we can do our analysis easily. First, let's transform some of the columns in the `raw_recipes` dataframe so our data is easy to work with.
+
+1. The `'tags'`, `'steps'`, and `'intredients'` columns in the dataframe are supposed to be lists, but they're currently strings. We will simply transform all of the values into lists.
+2. The `'nutrition'` column is also given as a string that represents a list of nutrition values. We will split the nutrition values across multiple columns, so we can easily extract specific nutrition values we need easily. The steps taken to do this are as follows:
+- First, split the strings into their proper list format. Again, the format will be: [calories (#), total fat (PDV), sugar (PDV), sodium (PDV), protein (PDV), saturated fat (PDV), carbohydrates (PDV)].
+- For each specific nutrition value, take all the values for each recipe and turn them into their individual columns. Our resulting dataframe will have 7 new columns, one for each nutrition label, which will replace the old `'nutrition'` column.
+3. For our 7 new nutriton columns, we will convert each of the string values into floats. These values represent the percent daily values for each recipe.
+4. Now, we can combine the two dataframes, `raw_recipes` and `raw_interactions`, so that each review can be assigned to the recipe it was submitted for. To do this, we will perform a left merge for the two dataframes on the recipe IDs.
+5. In the merged dataset, we will fill all ratings of 0 with np.nan. This is because ratings of 0 indicate that the user who submitted the review did not submit an associated rating. Since we have no way of telling what the rating would've been, and having a value of 0 will lower the average rating of the recipe, we will make the value null so it will not affect our data.
+6. Find the average rating per recipe. To do this, we will groupby each specific recipe, and take the average of the ratings provided for that recipe. Our result is a pandas Series.
+7. Add the average rating series back into our merged dataframe using another left merge. The merged dataframe will now include a new column that includes the average rating for each recipe.
+- The merge itself will be on the recipe ID in the merged dataframe, and the index of the average rating series (since we created it from groupby, the index is the recipe ID). This results in the recipe ID appearing twice in the resulting merge, so we will drop one of them.
+
+We now have a cleaned dataset, `merged_recipes`, that we can use! This is what the head of the dataframe looks like:
+
 ---
 ## Hypothesis Testing
 ---
