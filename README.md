@@ -75,16 +75,29 @@ The `merged_recipes` dataframe has 234429 rows and 25 columns.
 
 ### Univariate Analysis
 
-The first few recipes we have are all rated very highly. Let's take a look at all of the recipe ratings to see how people feel about the recipes on food.com in general!
+The first few recipes we have are all rated very highly. Let's take a look at all of the non-null recipe ratings to see how people feel about the recipes on food.com in general!
 
 <iframe
-  src="assets/univariate_recipes.html"
+  src="assets/univariate_ratings.html"
   width="800"
   height="600"
   frameborder="0"
 ></iframe>
 
 It looks like the recipes tend to have very high ratings in general! This means that most people think the recipes in our dataset are very good, so we'll have to keep this in mind!
+
+Let's also take a look at the distribution of calories in our dataset, so we know what the average recipes' calories are.
+
+<iframe
+  src="assets/univariate_calories.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+_Note: Around 1% of the values for calories fall in the range 2500 - 45609, and are excluded from the distribution (outliers)_
+
+The distribution of calories appears to be skeweed right. A majority of the recipes' calories fall under the 25 - 500 range, but there are a couple of skewed values that could potentially introduce bias in later analyses.
 
 ### Bivariate Analysis
 
