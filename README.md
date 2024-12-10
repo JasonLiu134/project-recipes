@@ -1,5 +1,6 @@
 # A College Student's Nightmare: Cooking Times
 by Jason Liu (jal134@ucsd.edu)
+
 ---
 ## Introduction
 
