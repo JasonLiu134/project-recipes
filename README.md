@@ -185,6 +185,36 @@ Since our P-value was lower than our significance level (0.05), we can **reject*
 ---
 ## Hypothesis Testing
 
+Now, let's answer part of the question we stated in the introduction. Specificially, the question we are analyzing here is:
+
+**Does it take longer to prepare recipes that have more calories?**
+
+To answer this question, we will run a permutation test with the following:
+
+**Null Hypothesis**: The average time taken to prepare recipes with a high calorie content is equal to the average preparation time of recipes with a low calorie content.
+
+**Alternative Hypothesis**: It takes longer to prepare recipes with a high calorie content when compared to recipes with a low calorie content.
+
+**Test Statistic**: Difference in means for preparation time of recipes with a high and low calorie count
+
+**Significance Level**: 0.05
+
+First, we have to define what is considered a "high" calorie count. According to [Livestrong.com](https://www.livestrong.com/article/440135-recommended-calorie-intake-for-one-meal/), the average calorie intake per meal for women is between 533 to 800, and between 667 to 1000 for men, though it can vary. For this test, we will classify recipes with a high calorie count as recipes that include **over 1000 calories**.
+
+To conduct the permutation test, we will shuffle the `'Calories (#)'` column 10000 times, and we will calculate the difference in means for the preparation time in minutes between recipes with at least 1000 calories and recipes with less than 1000 calories.
+
+<iframe
+  src="assets/hypothesis_test.html"
+  width="600"
+  height="400"
+  frameborder="0"
+></iframe>
+
+**Observed Statistic**: 66.0130
+
+**P-Value**: 0.0656
+
+The P-value here is higher than our significance level (0.05), meaning we **fail to reject** the null hypothesis. We do not have convincing evidence that the average time taken to prepare recipes high in calories is longer than the average preparation time for recipes low in calories!
 
 ---
 ## Framing a Prediction Problem
