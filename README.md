@@ -100,7 +100,49 @@ The distribution of calories appears to be skeweed right. A majority of the reci
 ### Bivariate Analysis
 
 ---
+## Assessment of Missingness
+
+### NMAR Analysis
+
+There are three columns in our dataset that have a non-trivial amount of missingness: `'description'`, `'rating'`, and `'review'`. Two of these columns could potentially have NMAR data. Specifically, the `'description'` and `'rating'` column could both contain data that is Not Missing at Random (NMAR).
+
+The column that includes the description of recipes have a few values that are missing. The descriptions themselves are probably missing because the user who submitted the recipe did not include a description. However, there isn't really a clear relationship between a recipe's description and the rest of the data. The user who provided the recipe can include whatever they want in the description, and it could be completely unrelated to the recipe itself; there is no way to predict what the missing values could be. As such, I suspect that the `'description'` column is NMAR.
+
+Another column that I suspect could be NMAR is the `'rating'` column. The values in this column are missing because we replaced all ratings of 0 with np.nan, but the rating was 0 in the first place because the user who posted the review did not include a rating. We cannot predict what the user's rating would have been, since it's difficult to predict what the rating the user would have given simply based off of their review text. Furthermore, some reviews might not even be reviews - users might have left comments or questions about the recipe instead, which makes it impossible to tell if a user would have left a high or low rating. Therefore, I suspect that the missingness of the `'rating'` column is NMAR.
+
+### Missingness Dependency
+
+The review column could contain missing data that is potentially MAR on another column. Let's try and find out what columns the missingness could depend on!
+
+First, let's see if the missingness of the reviews could depend on the amount of time needed to prepare the recipe. 
+
+<iframe
+  src="assets/permutation_minutes_dist.html"
+  width="900"
+  height="500"
+  frameborder="0"
+></iframe>
+
+To perform this permutation test, we will use the following:
+
+**Null Hypothesis**: The distribution of minutes needed to prepare a recipe is the same for both missing and non-missing reviews.
+**Alternative Hypothesis**: The distribution of minutes needed to prepare a recipe is the different for missing and non-missing reviews.
+**Test Statistic**: Absolute difference in means of minutes for missing reviews and non-missing reviews
+**Significance Level**: 0.05
+
+We shuffled the `'minutes'` column to simulate data under the null hypothesis 10000 times. Each time, we calculated the absolute difference in means for minutes with missing and non-missing reviews.
+
+<iframe
+  src="assets/permutation_minutes_test.html"
+  width="600"
+  height="400"
+  frameborder="0"
+></iframe>
+
+---
 ## Hypothesis Testing
+
+
 ---
 ## Framing a Prediction Problem
 ---
