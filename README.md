@@ -126,8 +126,11 @@ First, let's see if the missingness of the reviews could depend on the amount of
 To perform this permutation test, we will use the following:
 
 **Null Hypothesis**: The distribution of minutes needed to prepare a recipe is the same for both missing and non-missing reviews.
+
 **Alternative Hypothesis**: The distribution of minutes needed to prepare a recipe is different for missing and non-missing reviews.
+
 **Test Statistic**: Absolute difference in means of minutes for missing reviews and non-missing reviews
+
 **Significance Level**: 0.05
 
 We shuffled the `'minutes'` column to simulate data under the null hypothesis 10000 times. Each time, we calculated the absolute difference in means for minutes with missing and non-missing reviews.
@@ -140,6 +143,7 @@ We shuffled the `'minutes'` column to simulate data under the null hypothesis 10
 ></iframe>
 
 **Observed Statistic**: 33.5635
+
 **P-Value**: 0.6799
 
 Since our P-value was larger than our significance level (0.05), we **fail to reject** the null hypothesis. We do not have convincing evidence that the missingness of the `'review'` column depends on the number of minutes taken to prepare a recipe!
@@ -156,8 +160,11 @@ Let's test a different column. Could the missingness of the reviews depend on th
 Our setup is much the same. To perform this permutation test, we will use the following:
 
 **Null Hypothesis**: The distribution of calories in a recipe is the same for both missing and non-missing reviews.
+
 **Alternative Hypothesis**: The distribution of calories in a recipe is different for missing and non-missing reviews.
+
 **Test Statistic**: Absolute difference in means of calories for missing reviews and non-missing reviews
+
 **Significance Level**: 0.05
 
 This time, we will shuffle the `'Calories (#)'` column 10000 times. For each simulation, we will calculate the absolute difference in means for calories with missing and non-missing reviews.
@@ -170,6 +177,7 @@ This time, we will shuffle the `'Calories (#)'` column 10000 times. For each sim
 ></iframe>
 
 **Observed Statistic**: 319.2691
+
 **P-Value**: 0.0063
 
 Since our P-value was lower than our significance level (0.05), we can **reject** the null hypothesis. It's possible that the missingness of the `'review'` column can depend on the number of calories present in a recipe!
