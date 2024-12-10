@@ -10,7 +10,7 @@ As a college student, I face a constant struggle in trying to decide what to eat
 
 To find out the answer to this question, I will be analyzing two different datasets.
 
-The first dataset is our `raw_recipes` dataset. It contains data about different recipes taken from food.com that were posted after the year 2008.
+The first dataset is our `raw_recipes` dataset. It contains data about different recipes taken from [food.com](https://www.food.com/) that were posted after the year 2008.
 This dataset has 83782 rows and 12 columns. Each row corresponds to a unique recipe. The data stored in the columns is as follows:
 
 | Column   | Description
