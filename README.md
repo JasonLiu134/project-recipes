@@ -316,9 +316,9 @@ To keep things simple, I will be using the default hyperparameters for our Decis
 
 After fitting the model, we have:
 
-Training Set RMSE: **5.7775** 
+**Training Set RMSE**: 5.7775
 
-Test Set RMSE: **35.9394**
+**Test Set RMSE**: 35.9394
 
 The RMSE indicates that our model is **not very good** at predicting the preparation time in minutes for a recipe using the provided features. Our RMSE is several times higher for the test data, meaning this baseline model is good at predicting values from the training data but bad at generalizing to unseen data. This could potentially be because decision trees are prone to overfitting on the training set, resulting in our model capturing a lot of noise from our training data.
 
@@ -349,11 +349,44 @@ To tune the hyperparameters, I used `GridSearchCV` to find the best hyperparamet
 
 Now, let's fit our final model using the new features and `RandomForestRegressor` with the best hyperparameters. To evaluate our new model, I found the RMSE for the training and test data using the same train-test splits that the baseline model used.
 
-Training Set RMSE: **22.4347** 
+**Training Set RMSE**: 22.4347
 
-Test Set RMSE: **23.1618**
+**Test Set RMSE**: 23.1618
 
 The final model has higher training error than the baseline model, and lower test set error than the baseline model. This means that our final model is less accurate when it comes to making predictions on the training data, but is more accurate when making predictions on unseen data. This is likely because our final model is not overfitting to the training data as much compared to the baseline model, allowing its predictions to be more accurate for our test data. As such, our final model is an improvement over our baseline!
 
 ---
 ## Fairness Analysis
+
+Let's perform a fairness analysis on our final model to see if it's able to draw fair conclusions for two different groups. 
+
+Specifically, we want to know: **Does the model perform worse for recipes with a large number of total fats than for recipes with a low number of total fats?**
+
+First, we should define our two groups more clearly. People should be eating three meals a day, and also not consume over 100% the PDV of fats to stay healthy. Therefore, on average, a meal shouldn't contain over 33% the PDV of total fats. This allows us to properly define our two groups:
+
+Group 1: Recipes high in fat content (total fat content of over 33% PDV)
+
+Group 2: Recipes with a low fat content (total fat content lower than or equal to 33% PDV)
+
+Our evalutaion metric will again be the RMSE of our model. To test for fairness between the two groups, we will conduct another permutation test with the following:
+
+**Null Hypothesis**: Our model is fair. The RMSE of predicted cooking times for recipes high in fat content and low in fat content are roughly the same, and any differences are due to random chance.
+
+**Alternative Hypothesis**: Our model is unfair. The RMSE of predicted cooking times for recipes high in fat content is greater than the RMSE for recipes low in fat content.
+
+**Test Statistic**: Difference in RMSE (High fat recipes - Low fat recipes)
+
+**Significance Level**: 0.05
+
+In this permutation test, we will generate 500 simulated test statistics by randomly shuffling the `'Total Fat (PDV)'` column and splitting the shuffled data into their respective groups for high or low fat content. In each simulation, we will then use the final model to make predictions for each of the groups and then calculate the RMSE for each group's predictions, then calculate our test statistic, which is the difference of the RMSE values.
+
+<iframe
+  src="assets/fairness_analysis.html"
+  width="600"
+  height="400"
+  frameborder="0"
+></iframe>
+
+**Observed Statistic**: 66.0130
+
+**P-Value**: 0.0656
