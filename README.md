@@ -53,10 +53,10 @@ To start, we should clean up our datasets so we can do our analysis easily. Firs
 1. The `'tags'`, `'steps'`, and `'ingredients'` columns in the dataframe are supposed to be lists, but they're currently strings. We will simply transform all of the values into lists.
 2. The `'nutrition'` column is also given as a string that represents a list of nutrition values. We will split the nutrition values across multiple columns, so we can easily extract specific nutrition values we need easily. The steps taken to do this are as follows:
 - First, split the strings into their proper list format. Again, the format will be: [calories (#), total fat (PDV), sugar (PDV), sodium (PDV), protein (PDV), saturated fat (PDV), carbohydrates (PDV)].
-- For each specific nutrition value, take all the values for each recipe and turn them into their individual columns. Our resulting dataframe will have 7 new columns, one for each nutrition label, which will replace the old `'nutrition'` column.
-3. For our 7 new nutriton columns, we will convert each of the string values into floats. These values represent the percent daily values for each recipe.
+- Take all of the specific nutrition values for the recipes and turn each one into their individual columns. Our resulting dataframe will have 7 new columns, one for each nutrition label.
+3. For our 7 new nutriton columns, we will convert each of the string values into floats since they are quantitative. These values represent the percent daily values for each recipe.
 4. Now, we can combine the two dataframes, `raw_recipes` and `raw_interactions`, so that each review can be assigned to the recipe it was submitted for. To do this, we will perform a left merge for the two dataframes on the recipe IDs.
-5. In the merged dataset, we will fill all ratings of 0 with np.nan. This is because ratings of 0 indicate that the user who submitted the review did not submit an associated rating. Since we have no way of telling what the rating would've been, and having a value of 0 will lower the average rating of the recipe, we will make the value null so it will not affect our data.
+5. In the merged dataset, we will fill all ratings of 0 with np.nan. This is because ratings of 0 indicate that the user who submitted the review did not submit an associated rating. Since we have no way of telling what the rating would've been, and having a value of 0 will lower the average rating of the recipe, we will make the value null so it will not affect our data later on.
 6. Find the average rating per recipe. To do this, we will groupby each specific recipe, and take the average of the ratings provided for that recipe. Our result is a pandas Series.
 7. Add the average rating series back into our merged dataframe using another left merge. The merged dataframe will now include a new column that includes the average rating for each recipe.
 - The merge itself will be on the recipe ID in the merged dataframe, and the index of the average rating series (since we created it from groupby, the index is the recipe ID). This results in the recipe ID appearing twice in the resulting merge, so we will drop one of them.
@@ -71,7 +71,7 @@ We now have a cleaned dataset, `merged_recipes`, that we can use! This is what t
 | 412 broccoli casserole             | 40      | 6       | 9             | 194.8        | 20.0            | 6.0         | 32.0         | 22.0          | 3.0                 | 5.0    | I made this for my son's first birthday party ... | 5.0            |
 | 412 broccoli casserole             | 40      | 6       | 9             | 194.8        | 20.0            | 6.0         | 32.0         | 22.0          | 3.0                 | 5.0    | Loved this. Be sure to completely thaw the br...  | 5.0            |
 
-The `merged_recipes` dataframe has 234429 rows and 25 columns.
+The `merged_recipes` dataframe (that will be used for the rest of the project) has 234429 rows and 25 columns.
 
 These are what data types the columns contain:
 
@@ -89,18 +89,18 @@ These are what data types the columns contain:
 | `'description'` | object
 | `'ingredients'` | object
 | `'n_ingredients'` | int
-| `'Calories (#)'` | float64
-| `'Total Fat (PDV)'` | float64
-| `'Sugar (PDV)'` | float64
-| `'Sodium (PDV)'` | float64
-| `'Protein (PDV)'` | float64
-| `'Saturated fat (PDV)'` | float64
-| `'Carbohydrates (PDV)'` | float64
-| `'user_id'` | float64
+| `'Calories (#)'` | float
+| `'Total Fat (PDV)'` | float
+| `'Sugar (PDV)'` | float
+| `'Sodium (PDV)'` | float
+| `'Protein (PDV)'` | float
+| `'Saturated fat (PDV)'` | float
+| `'Carbohydrates (PDV)'` | float
+| `'user_id'` | float
 | `'date'` | object
-| `'rating'` | float64
+| `'rating'` | float
 | `'review'` | object
-| `'average_rating'` | float64
+| `'average_rating'` | float
 
 ### Univariate Analysis
 
@@ -112,7 +112,7 @@ The first few recipes we have are all rated very highly. Let's take a look at al
   height="400"
   frameborder="0"
 ></iframe>
-It looks like the recipes tend to have very high ratings in general! This means that most people think the recipes in our dataset are very good, so we'll have to keep this in mind!
+It looks like the recipes tend to have very high ratings in general, since most of them were 5! This means that most people think the recipes in our dataset are very good, so we'll have to keep this in mind.
 
 Let's also take a look at the distribution of calories in our dataset, so we know what the average recipes' calories are.
 
@@ -124,7 +124,7 @@ Let's also take a look at the distribution of calories in our dataset, so we kno
 ></iframe>
 _Note: Around 1% of the values for calories fall in the range 2500 - 45609, and are excluded from the distribution (outliers)_
 
-The distribution of calories appears to be skeweed right. A majority of the recipes' calories fall under the 25 - 500 range, but there are a couple of skewed values that could potentially introduce bias in later analyses.
+The distribution of calories appears to be skewed right. A majority of the recipes' calories fall under the 25 - 500 range, but there are a couple of skewed, larger values that could potentially introduce bias in later analyses.
 
 ### Bivariate Analysis
 
@@ -140,7 +140,7 @@ First, we'll see if there could be a correlation between the amount of sugar in 
 ></iframe>
 _Note: The 5 recipes with the largest sugar content and the 5 recipes with the most calories were excluded from the graph since they were extreme outliers, making most of the data points hard to see._
 
-It seems like in general, there is a slight positive correlation between the amount of sugar and the calories in a recipe. However, there are some recipes without much sugar that still contain very high calories.
+By observing the plot, it seems like in general, there is a slight positive correlation between the amount of sugar and the calories in a recipe. However, there are some recipes without much sugar that still contain very high calories, so the association may be weak.
 
 Another relationship we can look at is between the amount of carbohydrates and the number of calories in a recipe.
 
@@ -150,9 +150,11 @@ Another relationship we can look at is between the amount of carbohydrates and t
   height="400"
   frameborder="0"
 ></iframe>
-_Note: The 5 recipes with the most calories content and the 5 recipes with the highest level of carbohydrates were excluded for the same reason as above._
+_Note: The 5 recipes with the highest calorie content and the 5 recipes with the most carbohydrates were excluded for the same reason as above._
 
-We can also notice a slight positive correlation between the amount of carbohydrates and the calories in a recipe. The correlation appears to be is slightly stronger than what we see in the sugar scatterplot, but we can't be 100% sure.
+We can also notice a slight positive correlation between the amount of carbohydrates and the calories in a recipe, since recipes with more carbohydrates seem to have higher calories, too. The correlation appears to be is slightly stronger than what we see in the sugar scatterplot, but we can't be 100% sure.
+
+Both of these plots tell us that the `'Sugar (PDV)'` and `'Carbohydrates (PDV)'` columns may have a positive correlation with a recipe's calories. 
 
 ### Interesting Aggregates
 
@@ -171,9 +173,9 @@ Another relationship that we can look into is trying to see if a recipe's calori
 | 37 | 0.00 | 0.00 | 0.00 | 0.00 | 10687.70 | 10687.70 |
 | All | 486.60 | 446.60 | 425.79 | 405.05 | 415.21 | 415.10 |
 
-This pivot table has several interesting features to discuss. First, by looking at the bottom row, it would seem like on average, the recipes with lower ratings typically had more calories. We can note that since a majority of the ratings were 5 (from earlier), it's likely that many large outliers with high calories will have a rating of 5. As such, the average calories for recipes with a rating of 5 could actually be higher than what we should expect compared to the other ratings. This is seen in the bottom few rows, where the few recipes that used over 30 ingredients only received ratings of 5. 
+This pivot table has several interesting features to discuss. First, by looking at the bottom row, it would seem like on average, the recipes with lower ratings typically had more calories. We can note that since a majority of the ratings were 5 (from earlier), it's likely that many large outliers with high calories can also have a rating of 5. As such, the average calories for recipes with a rating of 5 could actually be higher than what we should expect compared to the other ratings. This is seen in the bottom few rows, where the few recipes that used over 30 ingredients only received ratings of 5. 
 
-The pivot table also gives us some important information on how the number of ingredients can affect the calories as well. On average, looking at the first few rows, it seems like recipes that only use one ingredient typically contain many more calories than other recipes. However, aside from that, there isn't a clear pattern for how the number of ingredients could affect the number of calories, even though we would expect more food to come from more ingredients. This is likely because we don't acutally have information on what the ingredients are, and having certain ingredients like oil or butter in a recipe would contribute to a recipe that uses a lot of vegetables; therefore, the information by n_ingredients alone might actually not be quantitative!
+The pivot table also gives us some important information on how the number of ingredients can affect the calories as well. On average, looking at the first few rows, it seems like recipes that only use one ingredient typically contain many more calories than other recipes. However, aside from that, there isn't a clear pattern for how the number of ingredients could affect the calories, even though we would expect a recipe with more ingridents to produce food that has more calories. This is likely because we don't acutally have information on what the ingredients are, and having certain ingredients like oil or butter in a recipe would contribute more calories to the recipe than one that uses a lot of vegetables; therefore, the information found in `'n_ingredients'` alone might not be quantitative!
 
 ---
 ## Assessment of Missingness
@@ -182,7 +184,7 @@ The pivot table also gives us some important information on how the number of in
 
 There are three columns in our dataset that have a non-trivial amount of missingness: `'description'`, `'rating'`, and `'review'`. A column that could potentially have data that is Not Missing at Random (NMAR) is the `'description'` column.
 
-The column that includes the description of recipes have a few values that are missing. The descriptions themselves are probably missing because the user who submitted the recipe did not include a description when posting their recipe on the website. The missingness of the description itself is a good indicator for why the description could be missing, as the user could have felt like their recipe is quite simple or popular and doesn't require a description, which results in there being no description. As such, I suspect that the `'description'` column is NMAR.
+The column that includes the description of recipes have a few values that are missing. The descriptions themselves are probably missing because the user who submitted the recipe did not include a description when posting their recipe on the website. The missingness of the description itself is a good indicator for why the description could be missing, as the user who submitted the recipe could have felt like their recipe is quite simple or popular and doesn't require a description, which results in there being none. As such, I suspect that the `'description'` column is NMAR.
 
 ### Missingness Dependency
 
@@ -293,11 +295,11 @@ The P-value here is higher than our significance level (0.05), meaning we **fail
 ---
 ## Framing a Prediction Problem
 
-Now it's time to really address our question from the introduction as a whole: How do the nutritional values and quality of a recipe affect the amount of time it takes to prepare a particular recipe? We'll do this by attempting to fit a model to our data to try and predict the time taken to prepare a recipe using its nutritional values and overall quality (average ratings). The response variable is the **number of minutes to prepare a recipe**. This will be a **Regression Problem**, because the response variable we're predicting is quantitative, and the implementation will use a **Decision Tree Regressor** to make predictions, since it is better than a linear model at identifying complicated non-linear relationships.
+Now it's time to really address our question from the introduction as a whole: **How do the nutritional values and quality of a recipe affect the amount of time it takes to prepare a particular recipe?** We'll do this by attempting to fit a model to our data to try and predict the time taken to prepare a recipe using its nutritional values and overall quality (average ratings). The response variable is the **number of minutes to prepare a recipe**. This will be a **Regression Problem**, because the response variable we're predicting is quantitative, and the implementation will use a **Decision Tree Regressor** to make predictions, since it is better than a linear model at identifying complicated non-linear relationships.
 
-I chose the specific response variable since each individual recipe in the merged dataset has a preparation time, nutritional values, and average rating associated with it, allowing us to train our model very effectively. At the time of prediction, the data that we will have available is the average rating for each recipe, the nutritional information, and the steps and ingredients used in the recipe.
+I chose the specific response variable since each individual recipe in the merged dataset has a preparation time associated with it, as well as nutritional values. Since we have access to all of the data we need, we can train our model very effectively. At the time of prediction, the data that we will have available is the average rating for each recipe, the nutritional information, and the steps and ingredients used in the recipe. This is because when using the model for predictions, I'll generally have a good idea for what ingredients I will use and how I might go about using them, and I simply want to find out how long it'll take me to prepare my food!
 
-To evaluate the model, we will use the **Root Mean Squared Error (RMSE)** as the evaluation metric. A lower RMSE value would indiate that our model is making predictions that are closer to the actual values, and will have better performance.
+To evaluate the model, we will use the **Root Mean Squared Error (RMSE)** as the evaluation metric. I chose this metric because the RMSE is a good indicator of how well a model's predictions are, and the value itself can be easily interpreted. A lower RMSE value would indicate that our model is making predictions that are closer to the actual values, and has better performance. 
 
 ---
 ## Baseline Model
@@ -306,13 +308,13 @@ Let's create our baseline DecisionTreeRegressor model. The model will make predi
 
 | Feature   | Data Type | Inclusion | Encoding
 | :-----  | :----- | :----- | :-----
-| `'Calories (#)'` | Quantitative | The number of calories is important, since it's the nutrition value that I prioritize the most, which is why I include it as a feature | The distribution calories is skewed right, and include some very large outliers, so we will use a **Log Encoding** to help scale the values
-| `'Protein (PDV)'` | Quantitative | The amount of protein is also very important, since meat can sometimes take a long time to cook to ensure it's safe | Like calories, the distribution is skewed right and we will use a **Log Encoding** to transform this column as well
-| `'average_rating'` | Quantitative | People might rate recipes differently if they're quick and easy, so the average rating could be an indicator for the prep time | This column represents the quality of a recipe, includes values from 1 to 5 only, and we will not need to encode it since its values are quantitative
+| `'Calories (#)'` | Quantitative | The number of calories is important, since it's the nutrition value that I prioritize the most, which is why I included it as a feature | The calories distribution is skewed right, and include some very large outliers, so we will use a **Log Encoding** to help scale the values
+| `'Protein (PDV)'` | Quantitative | The amount of protein is also very important, since meat can sometimes take a long time to cook to ensure it's safe to eat, and must be factored in when trying to predict cooking times | Like calories, the distribution is skewed right and we will use a **Log Encoding** to transform this column as well
+| `'average_rating'` | Quantitative | People might rate recipes differently depending on they're quick and easy or time-consuming to prepare, so the average rating could be an indicator for the prep time | This column represents the quality of a recipe, includes values from 1 to 5 only, and we will not need to encode it since its values are quantitative
 
-The model will predict the preparation time of a recipe in minutes. Something important to note is that the `'minutes'` column contains a lot of skew, as the average minutes is 115.03 while there are values as high as 1051200! To handle this, we will identify the outliers using the **Interquartile Range**, and values greater than the third quartile by 1.5 times the IQR will be considered outliers. Recipes that contain these outliers for minutes will be dropped, since they are not a good representation of what our dataset will want to predict on average.
+The model will predict the preparation time of a recipe in minutes. Something important to note is that the `'minutes'` column contains a lot of skew, as the average minutes is 115.03 while there are values as high as 1051200! To handle this, we will identify the outliers using the **Interquartile Range**, and values greater than the third quartile by 1.5 times the IQR will be considered outliers. Recipes that contain these outliers for minutes will be dropped, since they are not a good representation of what our dataset will want to predict on average (it doesn't make sense to spend 1 million minutes making dinner).
 
-To keep things simple, I will be using the default hyperparameters for our DecisionTreeRegressor. This means that there won't be a maximum depth for the decision tree.
+To keep things simple, I will be using the default hyperparameters for the DecisionTreeRegressor.
 
 After fitting the model, we have:
 
@@ -320,7 +322,7 @@ After fitting the model, we have:
 
 **Test Set RMSE**: 36.0187
 
-The RMSE indicates that our model is **not very good** at predicting the preparation time in minutes for a recipe using the provided features. Our RMSE is several times higher for the test data, meaning this baseline model is good at predicting values from the training data but bad at generalizing to unseen data. This could potentially be because decision trees are prone to overfitting on the training set, resulting in our model capturing a lot of noise from our training data.
+The RMSE indicates that our model is **not very good** at predicting the preparation time in minutes for a recipe using the provided features. Our RMSE is several times higher for the test data than the training data, meaning this baseline model is good at predicting values from the training data but bad at generalizing to unseen data. This could potentially be because decision trees are prone to overfitting on the training set, resulting in our model capturing a lot of noise from our training data.
 
 ---
 ## Final Model
@@ -332,12 +334,12 @@ We will also add some more features to help improve our model.
 | Feature   | Data Type | Inclusion | Encoding
 | :-----  | :----- | :----- | :-----
 | `'Sugar (PDV)'` | Quantitative | The amount of sugar can impact the amount of time taken to prepare a recipe, since a lot of sugar might indicate a recipe is a dessert, and could require baking which might take a different amount of time | The distribution is skewed right, and include some very large outliers, so we will use a **Log Encoding** to help scale the values
-| `'n_ingredients'` | Categorical | Having more ingredients could mean that a recipe is more complicated, and will need more time to prepare all of the ingredients | This data will be encoded using **One-Hot Encoding** since the number of ingredients is categorical, as we don't know what the ingredients are, and different types of ingredients could make the values have a different interpretation
-| `'n_steps'` | Categorical | If a recipe has more steps, then it's possible that more time will need to be spent overall since we'll need to complete more tasks to prepare a recipe | This data will also be encoded using **One-Hot Encoding** since the number of steps is categorical, as all steps might be different, so we're mostly concerned with the complexity of the recipe based on the number of steps
+| `'n_ingredients'` | Categorical | Having more ingredients could mean that a recipe is more complicated, and will need more time to prepare all of the ingredients, so we should include this column | This data will be encoded using **One-Hot Encoding** since the number of ingredients is categorical; we don't know what the ingredients are, and different types of ingredients could make the values have a different interpretation - as such, they aren't the standard numbers we're used to working with
+| `'n_steps'` | Categorical | If a recipe has more steps, then it's possible that more time will need to be spent overall since we'll need to complete more tasks to prepare a recipe, making this a good feature to include | This data will also be encoded using **One-Hot Encoding** since the number of steps is categorical. All the steps might be different and take different times, meaning like the column containing the number of ingredients, the data here is not exactly quantitative
 
 The hyperparameters that were tuned in this model are the `max_depth` and the `n_estimators` of the Random Forest Regressor. 
 
-I chose to tune the `max_depth` because if the maximum depth for the trees in the model are too high, it could result in each tree being more biased to the training data, while having a low maximum depth could make the model too simple and fail to capture a relationship.
+I chose to tune the `max_depth` because if the maximum depth for the trees in the model are too high, it could result in each tree being more biased to the training data, while having a low maximum depth could make the model too simple and fail to capture a relationship. It's important to find a value that works well!
 
 I chose to tune the `n_estimators` because I want to figure out what the optimal number of decision trees to use in the random forest is. Generally, more decision trees will make our predictions more accurate, but it's good to make sure.
 
