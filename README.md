@@ -50,7 +50,7 @@ We will use these datasets in conjuction with each other in order to help us loo
 
 To start, we should clean up our datasets so we can do our analysis easily. First, let's transform some of the columns in the `raw_recipes` dataframe so our data is easy to work with.
 
-1. The `'tags'`, `'steps'`, and `'intredients'` columns in the dataframe are supposed to be lists, but they're currently strings. We will simply transform all of the values into lists.
+1. The `'tags'`, `'steps'`, and `'ingredients'` columns in the dataframe are supposed to be lists, but they're currently strings. We will simply transform all of the values into lists.
 2. The `'nutrition'` column is also given as a string that represents a list of nutrition values. We will split the nutrition values across multiple columns, so we can easily extract specific nutrition values we need easily. The steps taken to do this are as follows:
 - First, split the strings into their proper list format. Again, the format will be: [calories (#), total fat (PDV), sugar (PDV), sodium (PDV), protein (PDV), saturated fat (PDV), carbohydrates (PDV)].
 - For each specific nutrition value, take all the values for each recipe and turn them into their individual columns. Our resulting dataframe will have 7 new columns, one for each nutrition label, which will replace the old `'nutrition'` column.
@@ -357,5 +357,3 @@ The final model has higher training error than the baseline model, and lower tes
 
 ---
 ## Fairness Analysis
-
-
