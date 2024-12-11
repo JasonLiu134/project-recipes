@@ -93,14 +93,14 @@ These are what data types the columns contain:
 | `'Total Fat (PDV)'` | float64
 | `'Sugar (PDV)'` | float64
 | `'Sodium (PDV)'` | float64
-| `'Protein (PDV)          float64
-| `'Saturated fat (PDV)    float64
-| `'Carbohydrates (PDV)    float64
-| `'user_id                float64
-| `'date                    object
-| `'rating                 float64
-| `'review                  object
-| `'average_rating         float64
+| `'Protein (PDV)'` | float64
+| `'Saturated fat (PDV)'` | float64
+| `'Carbohydrates (PDV)'` | float64
+| `'user_id'` | float64
+| `'date'` | object
+| `'rating'` | float64
+| `'review'` | object
+| `'average_rating'` | float64
 
 ### Univariate Analysis
 
@@ -127,6 +127,53 @@ _Note: Around 1% of the values for calories fall in the range 2500 - 45609, and 
 The distribution of calories appears to be skeweed right. A majority of the recipes' calories fall under the 25 - 500 range, but there are a couple of skewed values that could potentially introduce bias in later analyses.
 
 ### Bivariate Analysis
+
+Each recipe has several different nutritional values associated with it. Is there a relationship between these nutritional values themselves? Let's take a look.
+
+First, we'll see if there could be a correlation between the amount of sugar in a recipe and the number of calories by looking at a scatterplot.
+
+<iframe
+  src="assets/bivariate_sugar.html"
+  width="600"
+  height="400"
+  frameborder="0"
+></iframe>
+_Note: The 5 recipes with the largest sugar content and the 5 recipes with the most calories were excluded from the graph since they were extreme outliers, making most of the data points hard to see._
+
+It seems like in general, there is a slight positive correlation between the amount of sugar and the calories in a recipe. However, there are some recipes without much sugar that still contain very high calories.
+
+Another relationship we can look at is between the amount of carbohydrates and the number of calories in a recipe.
+
+<iframe
+  src="assets/bivariate_carbs.html"
+  width="600"
+  height="400"
+  frameborder="0"
+></iframe>
+_Note: The 5 recipes with the most calories content and the 5 recipes with the highest level of carbohydrates were excluded for the same reason as above._
+
+We can also notice a slight positive correlation between the amount of carbohydrates and the calories in a recipe. The correlation appears to be is slightly stronger than what we see in the sugar scatterplot, but we can't be 100% sure.
+
+### Interesting Aggregates
+
+Another relationship that we can look into is trying to see if a recipe's calories are affected by its complexity and quality. We defined a recipe's complexity as the number of steps and ingredients, but here we'll look at the number of ingredients to determine complexity. We can also measure the quality of a recipe by the reviews it's received. The following pivot table lets us see the average calories for each combination of rating and number of steps, and we'll try and find some interesting patterns in the aggregation!
+
+| rating | 1.0 | 2.0 | 3.0 | 4.0 | 5.0 | All |
+| n_ingredients | | | | | | |
+| :----- | :----- | :----- | :----- | :----- | :----- | :----- |
+| 1 | 0.00 | 199.50 | 136.05 | 758.68 | 1263.21 | 1194.49 |
+| 2 | 732.77 | 349.98 | 292.77 | 347.40 | 390.09 | 388.47 |
+| 3 | 419.62 | 329.93 | 335.45 | 268.41 | 276.89 | 279.54 |
+| 4 | 394.97 | 345.58 | 325.21 | 295.25 | 301.29 | 302.57 |
+| 5 | 487.56 | 362.73 | 332.41 | 332.65 | 322.76 | 327.01 | 
+| ... | ... | ... | ... | ... | ... | ... |
+| 33 | 0.00 | 0.00 | 0.00 | 0.00 | 338.20 | 338.20 |
+| 37 | 0.00 | 0.00 | 0.00 | 0.00 | 10687.70 | 10687.70 |
+| All | 486.60 | 446.60 | 425.79 | 405.05 | 415.21 | 415.10 |
+
+This pivot table has several interesting features to discuss. First, by looking at the bottom row, it would seem like on average, the recipes with lower ratings typically had more calories. We can note that since a majority of the ratings were 5 (from earlier), it's likely that many large outliers with high calories will have a rating of 5. As such, the average calories for recipes with a rating of 5 could actually be higher than what we should expect compared to the other ratings. This is seen in the bottom few rows, where the few recipes that used over 30 ingredients only received ratings of 5. 
+
+The pivot table also gives us some important information on how the number of ingredients can affect the calories as well. On average, looking at the first few rows, it seems like recipes that only use one ingredient typically contain many more calories than other recipes. However, aside from that, there isn't a clear pattern for how the number of ingredients could affect the number of calories, even though we would expect more food to come from more ingredients. This is likely because we don't acutally have information on what the ingredients are, and having certain ingredients like oil or butter in a recipe would contribute to a recipe that uses a lot of vegetables; therefore, the information by n_ingredients alone might actually not be quantitative!
 
 ---
 ## Assessment of Missingness
