@@ -389,7 +389,7 @@ In this permutation test, we will generate 500 simulated test statistics by rand
   frameborder="0"
 ></iframe>
 
-**Observed Statistic**: 66.0130
+**Observed Statistic**: 2.2706
 
 **P-Value**: 0.0
 
