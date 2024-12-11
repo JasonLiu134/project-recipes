@@ -61,17 +61,46 @@ To start, we should clean up our datasets so we can do our analysis easily. Firs
 7. Add the average rating series back into our merged dataframe using another left merge. The merged dataframe will now include a new column that includes the average rating for each recipe.
 - The merge itself will be on the recipe ID in the merged dataframe, and the index of the average rating series (since we created it from groupby, the index is the recipe ID). This results in the recipe ID appearing twice in the resulting merge, so we will drop one of them.
 
-We now have a cleaned dataset, `merged_recipes`, that we can use! This is what the head of the dataframe looks like (Note: I included only relevant columns that I'll be using in my analysis):
+We now have a cleaned dataset, `merged_recipes`, that we can use! This is what the head of the dataframe looks like (Note: I included only relevant columns that I'll be using in my analyses):
 
-| name                               | minutes | n_steps | n_ingredients | Calories (#) | Protein (PDV) | Carbohydrates (PDV) | rating | review                                            | average_rating |
-| :-----                             | :-----  | :-----  | :-----        | :-----       | :-----        | :-----              | :----- | :-----                                            | :-----         |
-| 1 brownies in the world best ever	 | 40      | 10      | 9             | 138.4        | 3.0           | 6.0                 | 4.0    | These were pretty good, but took forever to ba... | 4.0
-| 1 in canada chocolate chip cookies | 45      | 12      | 11            | 595.1        | 13.0          | 26.0                | 5.0    | Originally I was gonna cut the recipe in half ... | 5.0
-| 412 broccoli casserole             | 40      | 6       | 9             | 194.8        | 22.0          | 3.0                 | 5.0    | This was one of the best broccoli casseroles t... | 5.0
-| 412 broccoli casserole             | 40      | 6       | 9             | 194.8        | 22.0          | 3.0                 | 5.0    | I made this for my son's first birthday party ... | 5.0
-| 412 broccoli casserole             | 40      | 6       | 9             | 194.8        | 22.0          | 3.0                 | 5.0    | Loved this. Be sure to completely thaw the br...  | 5.0
+| name                               | minutes | n_steps | n_ingredients | Calories (#) | Total Fat (PDV) | Sugar (PDV) | Sodium (PDV) | Protein (PDV) | Carbohydrates (PDV) | rating | review                                            | average_rating |
+| :-----                             | :-----  | :-----  | :-----        | :-----       | :-----          | :-----      | :-----       | :-----        | :-----              | :----- | :-----                                            | :-----         |
+| 1 brownies in the world best ever	 | 40      | 10      | 9             | 138.4        | 10.0            | 50.0        | 3.0          | 3.0           | 6.0                 | 4.0    | These were pretty good, but took forever to ba... | 4.0            |
+| 1 in canada chocolate chip cookies | 45      | 12      | 11            | 595.1        | 46.0            | 211.0       | 22.0         | 13.0          | 26.0                | 5.0    | Originally I was gonna cut the recipe in half ... | 5.0            |
+| 412 broccoli casserole             | 40      | 6       | 9             | 194.8        | 20.0            | 6.0         | 32.0         | 22.0          | 3.0                 | 5.0    | This was one of the best broccoli casseroles t... | 5.0            |
+| 412 broccoli casserole             | 40      | 6       | 9             | 194.8        | 20.0            | 6.0         | 32.0         | 22.0          | 3.0                 | 5.0    | I made this for my son's first birthday party ... | 5.0            |
+| 412 broccoli casserole             | 40      | 6       | 9             | 194.8        | 20.0            | 6.0         | 32.0         | 22.0          | 3.0                 | 5.0    | Loved this. Be sure to completely thaw the br...  | 5.0            |
 
 The `merged_recipes` dataframe has 234429 rows and 25 columns.
+
+These are what data types the columns contain:
+
+| Column   | Type
+| :-----  | :-----
+| `'name'` | object
+| `'id'` | int
+| `'minutes'` | int
+| `'contributor_id'` | int
+| `'submitted'` | object
+| `'tags'` | object
+| `'nutrition'` | object
+| `'n_steps'` | int
+| `'steps'` | object
+| `'description'` | object
+| `'ingredients'` | object
+| `'n_ingredients'` | int
+| `'Calories (#)'` | float64
+| `'Total Fat (PDV)'` | float64
+| `'Sugar (PDV)'` | float64
+| `'Sodium (PDV)'` | float64
+| `'Protein (PDV)          float64
+| `'Saturated fat (PDV)    float64
+| `'Carbohydrates (PDV)    float64
+| `'user_id                float64
+| `'date                    object
+| `'rating                 float64
+| `'review                  object
+| `'average_rating         float64
 
 ### Univariate Analysis
 
@@ -281,3 +310,5 @@ The final model has higher training error than the baseline model, and lower tes
 
 ---
 ## Fairness Analysis
+
+
