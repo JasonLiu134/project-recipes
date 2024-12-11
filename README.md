@@ -218,7 +218,7 @@ We shuffled the `'minutes'` column to simulate data under the null hypothesis 10
 
 **Observed Statistic**: 33.5635
 
-**P-Value**: 0.6799
+**P-Value**: 0.6721
 
 Since our P-value was larger than our significance level (0.05), we **fail to reject** the null hypothesis. We do not have convincing evidence that the missingness of the `'review'` column depends on the number of minutes taken to prepare a recipe!
 
@@ -252,7 +252,7 @@ This time, we will shuffle the `'Calories (#)'` column 10000 times. For each sim
 
 **Observed Statistic**: 319.2691
 
-**P-Value**: 0.0063
+**P-Value**: 0.0048
 
 Since our P-value was lower than our significance level (0.05), we can **reject** the null hypothesis. It's possible that the missingness of the `'review'` column can depend on the number of calories present in a recipe!
 
@@ -286,7 +286,7 @@ To conduct the permutation test, we will shuffle the `'Calories (#)'` column 100
 
 **Observed Statistic**: 66.0130
 
-**P-Value**: 0.0656
+**P-Value**: 0.0666
 
 The P-value here is higher than our significance level (0.05), meaning we **fail to reject** the null hypothesis. We do not have convincing evidence that the average time taken to prepare recipes high in calories is longer than the average preparation time for recipes low in calories!
 
@@ -316,9 +316,9 @@ To keep things simple, I will be using the default hyperparameters for our Decis
 
 After fitting the model, we have:
 
-**Training Set RMSE**: 5.7775
+**Training Set RMSE**: 5.7549
 
-**Test Set RMSE**: 35.9394
+**Test Set RMSE**: 36.0187
 
 The RMSE indicates that our model is **not very good** at predicting the preparation time in minutes for a recipe using the provided features. Our RMSE is several times higher for the test data, meaning this baseline model is good at predicting values from the training data but bad at generalizing to unseen data. This could potentially be because decision trees are prone to overfitting on the training set, resulting in our model capturing a lot of noise from our training data.
 
@@ -349,9 +349,9 @@ To tune the hyperparameters, I used `GridSearchCV` to find the best hyperparamet
 
 Now, let's fit our final model using the new features and `RandomForestRegressor` with the best hyperparameters. To evaluate our new model, I found the RMSE for the training and test data using the same train-test splits that the baseline model used.
 
-**Training Set RMSE**: 22.4347
+**Training Set RMSE**: 22.4137
 
-**Test Set RMSE**: 23.1618
+**Test Set RMSE**: 23.2115
 
 The final model has higher training error than the baseline model, and lower test set error than the baseline model. This means that our final model is less accurate when it comes to making predictions on the training data, but is more accurate when making predictions on unseen data. This is likely because our final model is not overfitting to the training data as much compared to the baseline model, allowing its predictions to be more accurate for our test data. As such, our final model is an improvement over our baseline!
 
@@ -389,4 +389,6 @@ In this permutation test, we will generate 500 simulated test statistics by rand
 
 **Observed Statistic**: 66.0130
 
-**P-Value**: 0.0656
+**P-Value**: 0.0
+
+Since our p-value is lower than our significance level, we reject the null hypothesis. There is evidence that the RMSE for recipes with a high total fat content is greater than the RMSE for recipes with a lower fat content. This means that our model is not fair, as it performs worse for recipes that contain a lot of fats!
